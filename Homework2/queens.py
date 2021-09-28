@@ -1,5 +1,4 @@
 import random as ran
-from queue import PriorityQueue
 
 
 def heuristic_h(state):
@@ -24,19 +23,52 @@ def hillclimb_sa(state):
         return [state, 0]
     cnt = 1
     while True:
-        next_states = PriorityQueue()
+        next_states = []
+        values = []
         for i in range(8):
             temp = state.copy()
             for j in range(8):
                 temp[i] = j
-                next_states.put((heuristic_h(temp), temp.copy()))
-        value, new_state = next_states.get()
+                next_states.append(temp.copy())
+                values.append(-heuristic_h(temp))
+        value = max(values)
+        ind = values.index(value)
+        new_state = next_states[ind]
         if value == 0:
             return [new_state, cnt]
         if new_state == state:
             return "fail"
         state = new_state
         cnt += 1
+
+
+def hillclimb_fc(state):
+    if heuristic_h(state) == 0:
+        return [state, 0]
+    cnt = 1
+    while True:
+        next_states = []
+        for i in range(8):
+            temp = state.copy()
+            for j in range(8):
+                temp[i] = j
+                next_states.append(temp.copy())
+        flg = 1
+        while next_states and flg:
+            ind = ran.randint(0, len(next_states)-1)
+            state_try = next_states.pop(ind)
+            if heuristic_h(state_try) == 0:
+                return [state_try, cnt]
+            if -heuristic_h(state_try) > -heuristic_h(state):
+                state = state_try
+                cnt += 1
+                flg = 0
+        if not next_states and flg:
+            return "fail"
+
+
+def sim_anneal(state):
+    return None
 
 
 def create_states(n):
@@ -52,12 +84,27 @@ def compute_avg_sa(state_dict):
     cnt = 0
     for _, (key, state) in enumerate(state_dict.items()):
         result = hillclimb_sa(state)
-        if result != "fail":
+        if result != "fail" and result[1] > 0:
             sums += result[1]
             cnt += 1
     print(f"The average steps to solve hillclimb steepest-ascent: {sums/cnt:0.6f}")
+    print(f"Solved {cnt/len(state_dict) * 100:0.6f} percent of the cases.")
+    return None
+
+
+def compute_avg_fc(state_dict):
+    sums = 0
+    cnt = 0
+    for _, (key, state) in enumerate(state_dict.items()):
+        result = hillclimb_fc(state)
+        if result != "fail" and result[1] > 0:
+            sums += result[1]
+            cnt += 1
+    print(f"The average steps to solve hillclimb first-choice: {sums/cnt:0.6f}")
+    print(f"Solved {cnt/len(state_dict) * 100:0.6f} percent of the cases.")
     return None
 
 
 states = create_states(10000)
 compute_avg_sa(states)
+compute_avg_fc(states)
