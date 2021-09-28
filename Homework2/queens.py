@@ -1,4 +1,5 @@
 import random as ran
+import numpy as np
 
 
 def heuristic_h(state):
@@ -67,8 +68,28 @@ def hillclimb_fc(state):
             return "fail"
 
 
-def sim_anneal(state):
-    return None
+def sim_anneal(state, schedule):
+    if heuristic_h(state) == 0:
+        return [state, 0]
+    n = len(schedule)
+    cnt = 0
+    while cnt < n and heuristic_h(state) != 0:
+        T = schedule[cnt]
+        if T == 0:
+            break
+        next = state.copy()
+        while state == next:
+            col = ran.randint(0, 7)
+            row = ran.randint(0, 7)
+            next[col] = row
+        delta = heuristic_h(state) - heuristic_h(next)
+        if delta > 0 or np.exp(delta/T) > 0.5:
+            state = next
+        cnt += 1
+    if heuristic_h(state) == 0:
+        return [state, cnt]
+    else:
+        return "fail"
 
 
 def create_states(n):
@@ -87,7 +108,7 @@ def compute_avg_sa(state_dict):
         if result != "fail" and result[1] > 0:
             sums += result[1]
             cnt += 1
-    print(f"The average steps to solve hillclimb steepest-ascent: {sums/cnt:0.6f}")
+    print(f"The average steps to solve Hillclimb Steepest-Ascent: {sums/cnt:0.6f}")
     print(f"Solved {cnt/len(state_dict) * 100:0.6f} percent of the cases.")
     return None
 
@@ -100,7 +121,20 @@ def compute_avg_fc(state_dict):
         if result != "fail" and result[1] > 0:
             sums += result[1]
             cnt += 1
-    print(f"The average steps to solve hillclimb first-choice: {sums/cnt:0.6f}")
+    print(f"The average steps to solve Hillclimb First-Choice: {sums/cnt:0.6f}")
+    print(f"Solved {cnt/len(state_dict) * 100:0.6f} percent of the cases.")
+    return None
+
+
+def compute_avg_anneal(state_dict, schedule):
+    sums = 0
+    cnt = 0
+    for _, (key, state) in enumerate(state_dict.items()):
+        result = sim_anneal(state, schedule)
+        if result != "fail" and result[1] > 0:
+            sums += result[1]
+            cnt += 1
+    print(f"The average steps to solve Simulated Anneal: {sums/cnt:0.6f}")
     print(f"Solved {cnt/len(state_dict) * 100:0.6f} percent of the cases.")
     return None
 
@@ -108,3 +142,6 @@ def compute_avg_fc(state_dict):
 states = create_states(10000)
 compute_avg_sa(states)
 compute_avg_fc(states)
+temps = [0.8**i for i in range(0, 1000, 1)]
+temps.append(0)
+compute_avg_anneal(states, temps)
