@@ -43,29 +43,26 @@ def hillclimb_sa(state):
         cnt += 1
 
 
+# Use binomial:
+# prob of not hitting is 55/56
+# prob of hitting at least once: 1 - (55/56)^n
+# if n = 300 then P=0.996
 def hillclimb_fc(state):
     if heuristic_h(state) == 0:
         return [state, 0]
     cnt = 1
-    while True:
-        next_states = []
-        for i in range(8):
-            temp = state.copy()
-            for j in range(8):
-                temp[i] = j
-                next_states.append(temp.copy())
-        flg = 1
-        while next_states and flg:
-            ind = ran.randint(0, len(next_states)-1)
-            state_try = next_states.pop(ind)
-            if heuristic_h(state_try) == 0:
-                return [state_try, cnt]
-            if -heuristic_h(state_try) > -heuristic_h(state):
-                state = state_try
-                cnt += 1
-                flg = 0
-        if not next_states and flg:
-            return "fail"
+    while cnt < 300:
+        next = state.copy()
+        while state == next:
+            col = ran.randint(0, 7)
+            row = ran.randint(0, 7)
+            next[col] = row
+        if heuristic_h(next) == 0:
+            return [next, cnt]
+        if -heuristic_h(next) > -heuristic_h(state):
+            state = next
+        cnt += 1
+    return "fail"
 
 
 def sim_anneal(state, schedule):
