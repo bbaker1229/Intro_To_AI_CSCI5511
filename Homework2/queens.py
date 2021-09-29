@@ -51,7 +51,8 @@ def hillclimb_fc(state):
     if heuristic_h(state) == 0:
         return [state, 0]
     cnt = 1
-    while cnt < 300:
+    step = 0
+    while step < 300:
         next = state.copy()
         while state == next:
             col = ran.randint(0, 7)
@@ -61,7 +62,8 @@ def hillclimb_fc(state):
             return [next, cnt]
         if -heuristic_h(next) > -heuristic_h(state):
             state = next
-        cnt += 1
+            cnt += 1
+        step += 1
     return "fail"
 
 
@@ -70,8 +72,9 @@ def sim_anneal(state, schedule):
         return [state, 0]
     n = len(schedule)
     cnt = 0
-    while cnt < n and heuristic_h(state) != 0:
-        T = schedule[cnt]
+    step = 0
+    while step < n and heuristic_h(state) != 0:
+        T = schedule[step]
         if T == 0:
             break
         next = state.copy()
@@ -82,7 +85,8 @@ def sim_anneal(state, schedule):
         delta = heuristic_h(state) - heuristic_h(next)
         if delta > 0 or np.exp(delta/T) > 0.5:
             state = next
-        cnt += 1
+            cnt += 1
+        step += 1
     if heuristic_h(state) == 0:
         return [state, cnt]
     else:
