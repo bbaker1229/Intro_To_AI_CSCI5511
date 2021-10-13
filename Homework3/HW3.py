@@ -140,6 +140,42 @@ class MinimaxPlayer:
                 print("That doesn't look like a legal action to me")
         return curr_move
 
+class AlphabetaPlayer:
+    def __init__(self, mycolor, plydepth):
+        self.color = mycolor
+        self.depth = plydepth
+
+    def get_color(self):
+        return self.color
+
+    def get_depth(self):
+        return self.depth
+
+    def make_move(self, state):
+        depth = self.get_depth()
+        color = self.get_color()
+        curr_move = None
+        legals = actions(state)
+        while curr_move == None:
+            # ind = ran.randint(0, len(legals) - 1)
+            # move = legals[ind]
+            move = alpha_beta_search(state, color, depth)
+            if move == "":
+                return legals[0]
+
+            if move == SKIP and SKIP in legals:
+                return move
+
+            try:
+                movetup = move
+            except:
+                movetup = None
+            if movetup in legals:
+                curr_move = movetup
+            else:
+                print("That doesn't look like a legal action to me")
+        return curr_move
+
 def utility(state, color):
     player_cnt = 0
     opponent_cnt = 0
@@ -177,6 +213,40 @@ def min_value(state, color, depth):
         if v2 < v:
             v = v2
             move = a
+    return v, move
+
+def alpha_beta_search(state, color, depth):
+    _, move = ab_max_value(state, color, -100, 100, depth - 1)
+    return move
+
+def ab_max_value(state, color, alpha, beta, depth):
+    if terminal_test(state) or depth == 0:
+        return utility(state, color), None
+    v = -100
+    move = None
+    for a in actions(state):
+        v2, a2 = ab_min_value(result(state, a), color, alpha, beta, depth - 1)
+        if v2 > v:
+            v = v2
+            move = a
+            alpha = max(alpha, v)
+        if v >= beta:
+            return v, move
+    return v, move
+
+def ab_min_value(state, color, alpha, beta, depth):
+    if terminal_test(state) or depth == 0:
+        return utility(state, color), None
+    v = 100
+    move = None
+    for a in actions(state):
+        v2, a2 = ab_max_value(result(state, a), color, alpha, beta, depth - 1)
+        if v2 < v:
+            v = v2
+            move = a
+            beta = min(beta, v)
+        if v <= alpha:
+            return v, move
     return v, move
 
 class OthelloState:
@@ -367,6 +437,9 @@ def main():
     play_game(player1, player2)
 
     player2 = MinimaxPlayer(WHITE, 4)
+    play_game(player1, player2)
+
+    player2 = AlphabetaPlayer(WHITE, 4)
     play_game(player1, player2)
 
 if __name__ == '__main__':
