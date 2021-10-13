@@ -104,6 +104,81 @@ class RandomPlayer:
                 print("That doesn't look like a legal action to me")
         return curr_move
 
+class MinimaxPlayer:
+    def __init__(self, mycolor, plydepth):
+        self.color = mycolor
+        self.depth = plydepth
+
+    def get_color(self):
+        return self.color
+
+    def get_depth(self):
+        return self.depth
+
+    def make_move(self, state):
+        depth = self.get_depth()
+        color = self.get_color()
+        curr_move = None
+        legals = actions(state)
+        while curr_move == None:
+            # ind = ran.randint(0, len(legals) - 1)
+            # move = legals[ind]
+            move = minimax_search(state, color, depth)
+            if move == "":
+                return legals[0]
+
+            if move == SKIP and SKIP in legals:
+                return move
+
+            try:
+                movetup = move
+            except:
+                movetup = None
+            if movetup in legals:
+                curr_move = movetup
+            else:
+                print("That doesn't look like a legal action to me")
+        return curr_move
+
+def utility(state, color):
+    player_cnt = 0
+    opponent_cnt = 0
+    for i in range(SIZE):
+        for j in range(SIZE):
+            if state.board_array[j][i] == color:
+                player_cnt += 1
+            else:
+                opponent_cnt += 1
+    return player_cnt - opponent_cnt
+
+def minimax_search(state, color, depth):
+    _, move = max_value(state, color, depth - 1)
+    return move
+
+def max_value(state, color, depth):
+    if terminal_test(state) or depth == 0:
+        return utility(state, color), None
+    v = -100
+    move = None
+    for a in actions(state):
+        v2, a2 = min_value(result(state, a), color, depth - 1)
+        if v2 > v:
+            v = v2
+            move = a
+    return v, move
+
+def min_value(state, color, depth):
+    if terminal_test(state) or depth == 0:
+        return utility(state, color), None
+    v = 100
+    move = None
+    for a in actions(state):
+        v2, a2 = max_value(result(state, a), color, depth - 1)
+        if v2 < v:
+            v = v2
+            move = a
+    return v, move
+
 class OthelloState:
     '''A class to represent an othello game state'''
 
@@ -269,6 +344,8 @@ def play_game(p1 = None, p2 = None):
             print("Game Over")
             display(s)
             display_final(s)
+            print(f"Black utility = {utility(s, BLACK)}")
+            print(f"White utility = {utility(s, WHITE)}")
             return
         action = p2.make_move(s)
         if action not in actions(s):
@@ -280,11 +357,16 @@ def play_game(p1 = None, p2 = None):
             print("Game Over")
             display(s)
             display_final(s)
+            print(f"Black utility = {utility(s, BLACK)}")
+            print(f"White utility = {utility(s, WHITE)}")
             return
 
 def main():
     player1 = RandomPlayer(BLACK)
     player2 = RandomPlayer(WHITE)
+    play_game(player1, player2)
+
+    player2 = MinimaxPlayer(WHITE, 4)
     play_game(player1, player2)
 
 if __name__ == '__main__':
