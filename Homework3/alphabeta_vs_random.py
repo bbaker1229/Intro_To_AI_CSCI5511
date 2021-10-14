@@ -184,6 +184,9 @@ class AlphabetaPlayer:
 
 
 def utility(state, color):
+    """
+    Count the difference in the number of spaces owned by a color and their opponent.
+    """
     player_cnt = 0
     opponent_cnt = 0
     for i in range(SIZE):
@@ -194,6 +197,11 @@ def utility(state, color):
                 opponent_cnt += 1
     return player_cnt - opponent_cnt
 
+def utility_eval(state, color):
+    """
+    Count the number of available moves from this state.
+    """
+    return len(actions(state))
 
 def minimax_search(state, color, depth):
     _, move = max_value(state, color, depth - 1)
@@ -201,8 +209,10 @@ def minimax_search(state, color, depth):
 
 
 def max_value(state, color, depth):
-    if terminal_test(state) or depth == 0:
+    if terminal_test(state):
         return utility(state, color), None
+    if depth == 0:
+        return utility_eval(state, color), None
     v = -100
     move = None
     for a in actions(state):
@@ -214,8 +224,10 @@ def max_value(state, color, depth):
 
 
 def min_value(state, color, depth):
-    if terminal_test(state) or depth == 0:
+    if terminal_test(state):
         return utility(state, color), None
+    if depth == 0:
+        return utility_eval(state, color), None
     v = 100
     move = None
     for a in actions(state):
@@ -232,8 +244,10 @@ def alpha_beta_search(state, color, depth):
 
 
 def ab_max_value(state, color, alpha, beta, depth):
-    if terminal_test(state) or depth == 0:
+    if terminal_test(state):
         return utility(state, color), None
+    if depth == 0:
+        return utility_eval(state, color), None
     v = -100
     move = None
     for a in actions(state):
@@ -248,8 +262,10 @@ def ab_max_value(state, color, alpha, beta, depth):
 
 
 def ab_min_value(state, color, alpha, beta, depth):
-    if terminal_test(state) or depth == 0:
+    if terminal_test(state):
         return utility(state, color), None
+    if depth == 0:
+        return utility_eval(state, color), None
     v = 100
     move = None
     for a in actions(state):
@@ -454,7 +470,7 @@ def play_game(p1=None, p2=None):
 
 def main():
     player1 = RandomPlayer(BLACK)
-    player2 = AlphabetaPlayer(WHITE, 4)
+    player2 = AlphabetaPlayer(WHITE, 5)
     play_game(player1, player2)
 
 
