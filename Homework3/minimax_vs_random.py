@@ -212,7 +212,7 @@ def max_value(state, color, depth):
     if terminal_test(state):
         return utility(state, color), None
     if depth == 0:
-        return utility_eval(state, color), None
+        return utility(state, color), None
     v = -100
     move = None
     for a in actions(state):
@@ -227,7 +227,7 @@ def min_value(state, color, depth):
     if terminal_test(state):
         return utility(state, color), None
     if depth == 0:
-        return utility_eval(state, color), None
+        return utility(state, color), None
     v = 100
     move = None
     for a in actions(state):
@@ -247,7 +247,7 @@ def ab_max_value(state, color, alpha, beta, depth):
     if terminal_test(state):
         return utility(state, color), None
     if depth == 0:
-        return utility_eval(state, color), None
+        return utility(state, color), None
     v = -100
     move = None
     for a in actions(state):
@@ -265,7 +265,7 @@ def ab_min_value(state, color, alpha, beta, depth):
     if terminal_test(state):
         return utility(state, color), None
     if depth == 0:
-        return utility_eval(state, color), None
+        return utility(state, color), None
     v = 100
     move = None
     for a in actions(state):
