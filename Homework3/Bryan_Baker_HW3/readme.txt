@@ -11,10 +11,21 @@ Testing my code:
 I created another python script called: arena.py.
 This file imports my code and then runs several different games between different opponents.  
 This file can take a while to run fully.  I may have the settings playing 100 games.  Please feel free to adjust the loops to finish in a time better for you.
+Use the following command to run:
+python3 arena.py
 
 Utility function:
 I created the utility function that counts the difference between a players pieces and their opponent.  
-I also played around with a utility_eval function where I returned the number of available moves in that state.  I worked but I couldn't see where that player won anymore games than a player that just used the count difference.
+I also played around with a utility_eval function where I returned the number of available moves in that state.  It worked but I couldn't see where that player won anymore games than a player that just used the count difference.
+This was much slower.  In the end I just left the count difference utility function.
 
 Observations:
 Two random players playing against each other have the quickest move time and they win about 50% of the time.
+As the depth increases the maximin and alphabeta search players tend to win more often.
+
+Tournament player:
+I created a tornament player in the file labeled:
+tournament_bake1358.py
+I attempted to parallelize the maximin algorithm by creating a process for each of the initial move branches, but for some reason I could only get it to execute to the appropriate depth for the first move.  There was no error only one move with a winner.
+If it doesn't work my tournament player is just my alphabetaPlayer with a ply depth of 8.  
+
