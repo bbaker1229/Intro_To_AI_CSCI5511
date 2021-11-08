@@ -105,9 +105,9 @@ def salt():
     else:
         print("The knowledge base is not satisfiable.  Try again.")
         return None
-    example_prob = sat_interface.KB(["~A ~B ~C", "A B C", "~B", "~C", "~A"])
+    example_prob = sat_interface.KB(["~AT B", "~B AT", "AT A C", "~A ~AT", "~C ~AT", "~BT AT", "~AT BT"
+                                            , "~CT ~C", "C CT", "A B C", "AT BT CT", "~AT ~BT ~CT"])
     print(example_prob.is_satisfiable())
-    """
     if example_prob.test_literal("A") and not example_prob.test_literal("~A"):
         print("Caterpillar ate the salt.")
     elif example_prob.test_literal("~A") and not example_prob.test_literal("A"):
@@ -123,10 +123,9 @@ def salt():
     if example_prob.test_literal("C") and not example_prob.test_literal("~C"):
         print("Cheshire Cat ate the salt.")
     elif example_prob.test_literal("~C") and not example_prob.test_literal("C"):
-        print("Cheshire Cat ate the salt.")
+        print("Cheshire Cat did not eat the salt.")
     else:
         print("Not enough information about Cheshire Cat to decide.")
-    """
     print("")
 
 
