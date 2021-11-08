@@ -99,15 +99,43 @@ def tt3():
 
 def salt():
     print("Robbery and a Salt:")
-    example_prob = sat_interface.KB(["~A ~B ~C", "A B C"])
+    example_prob = sat_interface.KB(["~AT B", "~B AT", "AT A C", "~A ~AT", "~C ~AT", "~BT AT", "~AT BT"
+                                            , "~CT ~C", "C CT", "A B C", "AT BT CT", "~AT ~BT ~CT"])
     if example_prob.is_satisfiable():
         print("The knowledge base is satisfiable.")
     else:
         print("The knowledge base is not satisfiable.  Try again.")
         return None
+    if example_prob.test_literal("A") and not example_prob.test_literal("~A"):
+        print("Caterpillar ate the salt.")
+    elif example_prob.test_literal("~A") and not example_prob.test_literal("A"):
+        print("Caterpillar did not eat the salt.")
+    else:
+        print("Not enough information about Caterpillar to decide.")
+    if example_prob.test_literal("B") and not example_prob.test_literal("~B"):
+        print("Bill the Lizard ate the salt.")
+    elif example_prob.test_literal("~B") and not example_prob.test_literal("B"):
+        print("Bill the Lizard did not eat the salt.")
+    else:
+        print("Not enough information about Bill the Lizard to decide.")
+    if example_prob.test_literal("C") and not example_prob.test_literal("~C"):
+        print("Cheshire Cat ate the salt.")
+    elif example_prob.test_literal("~C") and not example_prob.test_literal("C"):
+        print("Cheshire Cat did not eat the salt.")
+    else:
+        print("Not enough information about Cheshire Cat to decide.")
+    print("")
+
+
+def golf():
+    print("An honest name:")
     example_prob = sat_interface.KB(["~AT B", "~B AT", "AT A C", "~A ~AT", "~C ~AT", "~BT AT", "~AT BT"
                                             , "~CT ~C", "C CT", "A B C", "AT BT CT", "~AT ~BT ~CT"])
-    print(example_prob.is_satisfiable())
+    if example_prob.is_satisfiable():
+        print("The knowledge base is satisfiable.")
+    else:
+        print("The knowledge base is not satisfiable.  Try again.")
+        return None
     if example_prob.test_literal("A") and not example_prob.test_literal("~A"):
         print("Caterpillar ate the salt.")
     elif example_prob.test_literal("~A") and not example_prob.test_literal("A"):
@@ -134,6 +162,7 @@ def main():
     tt2()
     tt3()
     salt()
+    golf()
 
 
 if __name__ == "__main__":
