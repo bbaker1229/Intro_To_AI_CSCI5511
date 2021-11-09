@@ -106,6 +106,24 @@ def salt():
     else:
         print("The knowledge base is not satisfiable.  Try again.")
         return None
+    if example_prob.test_literal("AT") and not example_prob.test_literal("~AT"):
+        print("Caterpillar tells the truth.")
+    elif example_prob.test_literal("~AT") and not example_prob.test_literal("AT"):
+        print("Caterpillar lies.")
+    else:
+        print("Not enough information about Caterpillar to decide.")
+    if example_prob.test_literal("BT") and not example_prob.test_literal("~BT"):
+        print("Bill the Lizard tells the truth.")
+    elif example_prob.test_literal("~BT") and not example_prob.test_literal("BT"):
+        print("Bill the Lizard lies.")
+    else:
+        print("Not enough information about Bill the Lizard to decide.")
+    if example_prob.test_literal("CT") and not example_prob.test_literal("~CT"):
+        print("Cheshire Cat tells the truth.")
+    elif example_prob.test_literal("~CT") and not example_prob.test_literal("CT"):
+        print("Cheshire Cat lies.")
+    else:
+        print("Not enough information about Cheshire Cat to decide.")
     if example_prob.test_literal("A") and not example_prob.test_literal("~A"):
         print("Caterpillar ate the salt.")
     elif example_prob.test_literal("~A") and not example_prob.test_literal("A"):
@@ -129,24 +147,23 @@ def salt():
 
 def golf():
     print("An honest name:")
-    example_prob = sat_interface.KB(["T", "D ~D", "~H"  # Tom tells the truth; Harry lies; unknown about Dick
-                                    , "F ~H ~M", "F H M", "~H M ~T", "H ~M ~T"  # T <=> ((F <=> T) and (M <=> H)
-                                    , "~D F ~H ~L ~M", "~D F H ~L M", "~D L ~T", "D F ~H L ~M", "D F H L M", "D ~L ~T", "~H M ~T", "H ~M ~T"  # T <=> ((F <=> T) and (M <=> H) and (L <=> D)
-                                    , "~D ~F ~M ~T", "~D F T", "~D M T", "D ~F ~H ~M", "D ~F H T", "D F H ~M", "F ~H T"  # not T <=> ((F <=> (D or H)) and (M <=> (T or D))
-                                    , "~H ~M T", "~H M ~T", "L ~M ~T", "L M T"  # H <=> ((L <=> H) and (M <=> T))
-                                    , "~F ~H M", "~F H ~M", "F ~H ~M", "F H M"  # F <=> (M <=> H)
-                                    , "~L ~M T", "~L M ~T", "L ~M ~T", "L M T"  # L <=> (M <=> T)
-                                    , "F L M"  # (T and F) or (T and M) or (T and L)
-                                    , "~H ~M TF", "~H M ~TF", "H ~M ~TF", "H M TF"  # TF <=> (M <=> H)
-                                    , "~D ~M ~TM", "~D M TM", "D ~M TM", "D M ~TM"  # TM <=> not (M <=> D)
-                                    , "~M ~TL T", "~M TL ~T", "M ~TL ~T", "M TL T"  # TL <=> (M <=> T)
-                                    , "~H ~M ~DF", "~H M DF", "H ~M DF", "H M ~DF"  # DF <=> not (M <=> H)
-                                    , "~D ~M ~DM", "~D M DM", "D ~M DM", "D M ~DM"  # DM <=> not (M <=> D)
-                                    , "~M ~DL ~T", "~M DL T", "M ~DL T", "M DL ~T"  # DL <=> not (M <=> T)
-                                    , "~H ~M ~HF", "~H M HF", "H ~M HF", "H M ~HF"  # HF <=> not (M <=> H)
-                                    , "~D ~M HM", "~D M ~HM", "D ~M ~HM", "D M HM"  # HM <=> (M <=> D)
-                                    , "~M ~HL T", "~M HL ~T", "M ~HL ~T", "M HL T"  # HL <=> (M <=> T)
-                                    ])
+    example_prob = sat_interface.KB(["T", "D ~D", "~H"
+                                    , "F ~H ~M", "F H M", "~H M ~T", "H ~M ~T"
+                                    , "~D F ~H ~L ~M", "~D F H ~L M", "~D L ~T", "D F ~H L ~M", "D F H L M", "D ~L ~T", "~H M ~T", "H ~M ~T"
+                                    , "~D ~F ~M ~T", "~D F T", "~D M T", "D ~F ~H ~M", "D ~F H T", "D F H ~M", "F ~H T"
+                                    , "~H ~M T", "~H M ~T", "L ~M ~T", "L M T"
+                                    , "~F ~H M", "~F H ~M", "F ~H ~M", "F H M"
+                                    , "~L ~M T", "~L M ~T", "L ~M ~T", "L M T"
+                                    , "F L M"
+                                    , "~H ~M TF", "~H M ~TF", "H ~M ~TF", "H M TF"
+                                    , "~D ~M ~TM", "~D M TM", "D ~M TM", "D M ~TM"
+                                    , "~M ~TL T", "~M TL ~T", "M ~TL ~T", "M TL T"
+                                    , "~H ~M ~DF", "~H M DF", "H ~M DF", "H M ~DF"
+                                    , "~D ~M ~DM", "~D M DM", "D ~M DM", "D M ~DM"
+                                    , "~M ~DL ~T", "~M DL T", "M ~DL T", "M DL ~T"
+                                    , "~H ~M ~HF", "~H M HF", "H ~M HF", "H M ~HF"
+                                    , "~D ~M HM", "~D M ~HM", "D ~M ~HM", "D M HM"
+                                    , "~M ~HL T", "~M HL ~T", "M ~HL ~T", "M HL T"])
     if example_prob.is_satisfiable():
         print("The knowledge base is satisfiable.")
     else:
