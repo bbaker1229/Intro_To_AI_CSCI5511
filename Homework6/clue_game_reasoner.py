@@ -68,24 +68,94 @@ class ClueGameReasoner:
         # TO BE IMPLEMENTED AS AN EXERCISE:
 
         # A card cannot be in two places.
+        for c in CARDS:
+            for i in range(len(POSSIBLE_CARD_LOCATIONS)):
+                card = c + "_" + POSSIBLE_CARD_LOCATIONS[i]
+                for j in range(i + 1, len(POSSIBLE_CARD_LOCATIONS)):
+                    clause = "~" + card + " ~" + c + "_" + POSSIBLE_CARD_LOCATIONS[j]
+                    clauses.append(clause)
 
         # At least one card of each category is in the case file.
+        clause = ""
+        for s in SUSPECTS:
+            clause += s + "_CF "
+        clauses.append(clause)
+
+        clause = ""
+        for w in WEAPONS:
+            clause += w + "_CF "
+        clauses.append(clause)
+
+        clause = ""
+        for r in ROOMS:
+            clause += r + "_CF "
+        clauses.append(clause)
 
         # No two cards in each category can both be in the case file.
+        for i in range(len(SUSPECTS)):
+            card = SUSPECTS[i] + "_CF"
+            for j in range(i + 1, len(SUSPECTS)):
+                clause = "~" + card + " ~" + SUSPECTS[j] + "_CF"
+                clauses.append(clause)
+
+        for i in range(len(WEAPONS)):
+            card = WEAPONS[i] + "_CF"
+            for j in range(i + 1, len(WEAPONS)):
+                clause = "~" + card + " ~" + WEAPONS[j] + "_CF"
+                clauses.append(clause)
+
+        for i in range(len(ROOMS)):
+            card = ROOMS[i] + "_CF"
+            for j in range(i + 1, len(ROOMS)):
+                clause = "~" + card + " ~" + ROOMS[j] + "_CF"
+                clauses.append(clause)
 
         self.KB = sat_interface.KB(clauses)
 
     def add_hand(self, player_name, hand_cards):
         '''Add the information about the given player's hand to the KB'''
         # TO BE IMPLEMENTED AS AN EXERCISE
+        for card in hand_cards:
+            self.KB.add_clause(card + "_" + player_name)
 
     def suggest(self, suggester, c1, c2, c3, refuter, cardshown = None):
         '''Add information about a given suggestion to the KB'''
         # TO BE IMPLEMENTED AS AN EXERCISE
+        if cardshown is not None:
+            self.KB.add_clause(cardshown + "_" + refuter)
+        start_ind = POSSIBLE_PLAYERS.index(suggester)
+        if refuter is None:
+            end_ind = POSSIBLE_PLAYERS.index(suggester)
+        else:
+            end_ind = POSSIBLE_PLAYERS.index(refuter)
+        head = start_ind + 1
+        while head != end_ind:
+            if head >= len(POSSIBLE_PLAYERS):
+                head = 0
+                continue
+            else:
+                player = POSSIBLE_PLAYERS[head]
+                self.KB.add_clause("~" + c1 + "_" + player)
+                self.KB.add_clause("~" + c2 + "_" + player)
+                self.KB.add_clause("~" + c3 + "_" + player)
+                head += 1
+        if cardshown is None and refuter is not None:
+            self.KB.add_clause(c1 + "_" + refuter + " " + c2 + "_" + refuter + " " + c3 + "_" + refuter)
 
     def accuse(self, accuser, c1, c2, c3, iscorrect):
         '''Add information about a given accusation to the KB'''
         # TO BE IMPLEMENTED AS AN EXERCISE
+        if iscorrect:
+            self.KB.add_clause(c1 + "_CF")
+            self.KB.add_clause(c2 + "_CF")
+            self.KB.add_clause(c3 + "_CF")
+        else:
+            self.KB.add_clause("~" + c1 + "_CF")
+            self.KB.add_clause("~" + c2 + "_CF")
+            self.KB.add_clause("~" + c2 + "_CF")
+        self.KB.add_clause("~" + c1 + accuser)
+        self.KB.add_clause("~" + c2 + accuser)
+        self.KB.add_clause("~" + c2 + accuser)
 
     def print_notepad(self):
         print("Clue Game Notepad:")
