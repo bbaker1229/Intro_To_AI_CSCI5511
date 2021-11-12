@@ -68,6 +68,8 @@ class ClueGameReasoner:
         # TO BE IMPLEMENTED AS AN EXERCISE:
 
         # A card cannot be in two places.
+        # Here we add these rules for all combinations of cards:
+        # ~card_A or ~card_B
         for c in CARDS:
             for i in range(len(POSSIBLE_CARD_LOCATIONS)):
                 card = c + "_" + POSSIBLE_CARD_LOCATIONS[i]
@@ -76,34 +78,45 @@ class ClueGameReasoner:
                     clauses.append(clause)
 
         # At least one card of each category is in the case file.
+        # This is the same as the initial example above, but we only have to consider the case file.
+        # We are adding:
+        # card_A or card_B or card_C .....
         clause = ""
         for s in SUSPECTS:
             clause += s + "_CF "
         clauses.append(clause)
 
+        # Same as above but for weapons
         clause = ""
         for w in WEAPONS:
             clause += w + "_CF "
         clauses.append(clause)
 
+        # Same as above but for rooms
         clause = ""
         for r in ROOMS:
             clause += r + "_CF "
         clauses.append(clause)
 
         # No two cards in each category can both be in the case file.
+        # Here we focus on the suspects in the case file.
+        # We are adding rules like this:
+        # ~card_A or ~card_B
+        # for all combinations of suspect cards.
         for i in range(len(SUSPECTS)):
             card = SUSPECTS[i] + "_CF"
             for j in range(i + 1, len(SUSPECTS)):
                 clause = "~" + card + " ~" + SUSPECTS[j] + "_CF"
                 clauses.append(clause)
 
+        # Same as above but for weapons
         for i in range(len(WEAPONS)):
             card = WEAPONS[i] + "_CF"
             for j in range(i + 1, len(WEAPONS)):
                 clause = "~" + card + " ~" + WEAPONS[j] + "_CF"
                 clauses.append(clause)
 
+        # Same as above but for rooms
         for i in range(len(ROOMS)):
             card = ROOMS[i] + "_CF"
             for j in range(i + 1, len(ROOMS)):
@@ -115,44 +128,65 @@ class ClueGameReasoner:
     def add_hand(self, player_name, hand_cards):
         '''Add the information about the given player's hand to the KB'''
         # TO BE IMPLEMENTED AS AN EXERCISE
-        for card in hand_cards:
-            self.KB.add_clause(card + "_" + player_name)
+        # Here we check all cards.
+        # If the card is in our hand then we add: card_A to the KB.
+        # If the card is not in our hand then we add: ~card_A to the KB.
+        for card in CARDS:
+            if card in hand_cards:
+                self.KB.add_clause(card + "_" + player_name)
+            else:
+                self.KB.add_clause("~" + card + "_" + player_name)
 
     def suggest(self, suggester, c1, c2, c3, refuter, cardshown = None):
         '''Add information about a given suggestion to the KB'''
         # TO BE IMPLEMENTED AS AN EXERCISE
+        # If we know a refuter and we see the card then we add that that person has the card:
+        # card_refuter
         if cardshown is not None:
             self.KB.add_clause(cardshown + "_" + refuter)
+        # Here we need to loop over all of the players in the proper order.
+        # Define the suggester as the starting player
         start_ind = POSSIBLE_PLAYERS.index(suggester)
+        # If there is no refuter then we terminate when we get back to the suggester
         if refuter is None:
             end_ind = POSSIBLE_PLAYERS.index(suggester)
         else:
             end_ind = POSSIBLE_PLAYERS.index(refuter)
+        # Start an index on the next player in the cycle
         head = start_ind + 1
+        # Loop over the players until we reach the terminate player - the terminating player is not included here.
         while head != end_ind:
+            # We need to loop around to the beginning if we try to run past the max list index.
             if head >= len(POSSIBLE_PLAYERS):
                 head = 0
                 continue
             else:
+                # For each player that we skip add a clause saying that the player does not have any of the cards.
+                # ~card_player
                 player = POSSIBLE_PLAYERS[head]
                 self.KB.add_clause("~" + c1 + "_" + player)
                 self.KB.add_clause("~" + c2 + "_" + player)
                 self.KB.add_clause("~" + c3 + "_" + player)
-                head += 1
+                head += 1  # increment
+        # If we do not see the card and the suggestion is refuted then we know that the refuter has at least one card.
+        # card1_player or card2_player or card3_player
         if cardshown is None and refuter is not None:
             self.KB.add_clause(c1 + "_" + refuter + " " + c2 + "_" + refuter + " " + c3 + "_" + refuter)
 
     def accuse(self, accuser, c1, c2, c3, iscorrect):
         '''Add information about a given accusation to the KB'''
         # TO BE IMPLEMENTED AS AN EXERCISE
+        # If the accusation is correct then we can add this knowledge to the KB.
         if iscorrect:
             self.KB.add_clause(c1 + "_CF")
             self.KB.add_clause(c2 + "_CF")
             self.KB.add_clause(c3 + "_CF")
         else:
-            self.KB.add_clause("~" + c1 + "_CF")
-            self.KB.add_clause("~" + c2 + "_CF")
-            self.KB.add_clause("~" + c2 + "_CF")
+            # if incorrect then we know that the CF did not contain at least one of these cards.
+            # Add: ~card1_CF or ~card2_CF or ~card3_CF
+            self.KB.add_clause("~" + c1 + "_CF ~" + c2 + "_CF ~" + c3 + "_CF")
+        # We also know that the accuser did not have these cards other wise why are they trying to lose the game?
+        # Can we really say this?
         self.KB.add_clause("~" + c1 + accuser)
         self.KB.add_clause("~" + c2 + accuser)
         self.KB.add_clause("~" + c2 + accuser)
