@@ -185,11 +185,6 @@ class ClueGameReasoner:
             # if incorrect then we know that the CF did not contain at least one of these cards.
             # Add: ~card1_CF or ~card2_CF or ~card3_CF
             self.KB.add_clause("~" + c1 + "_CF ~" + c2 + "_CF ~" + c3 + "_CF")
-        # We also know that the accuser did not have these cards other wise why are they trying to lose the game?
-        # Can we really say this?
-        self.KB.add_clause("~" + c1 + accuser)
-        self.KB.add_clause("~" + c2 + accuser)
-        self.KB.add_clause("~" + c2 + accuser)
 
     def print_notepad(self):
         print("Clue Game Notepad:")
