@@ -146,24 +146,24 @@ class ClueGameReasoner:
             self.KB.add_clause(cardshown + "_" + refuter)
         # Here we need to loop over all of the players in the proper order.
         # Define the suggester as the starting player
-        start_ind = POSSIBLE_PLAYERS.index(suggester)
+        start_ind = self.players.index(suggester)
         # If there is no refuter then we terminate when we get back to the suggester
         if refuter is None:
-            end_ind = POSSIBLE_PLAYERS.index(suggester)
+            end_ind = self.players.index(suggester)
         else:
-            end_ind = POSSIBLE_PLAYERS.index(refuter)
+            end_ind = self.players.index(refuter)
         # Start an index on the next player in the cycle
         head = start_ind + 1
         # Loop over the players until we reach the terminate player - the terminating player is not included here.
         while head != end_ind:
             # We need to loop around to the beginning if we try to run past the max list index.
-            if head >= len(POSSIBLE_PLAYERS):
+            if head >= len(self.players):
                 head = 0
                 continue
             else:
                 # For each player that we skip add a clause saying that the player does not have any of the cards.
                 # ~card_player
-                player = POSSIBLE_PLAYERS[head]
+                player = self.players[head]
                 self.KB.add_clause("~" + c1 + "_" + player)
                 self.KB.add_clause("~" + c2 + "_" + player)
                 self.KB.add_clause("~" + c3 + "_" + player)
