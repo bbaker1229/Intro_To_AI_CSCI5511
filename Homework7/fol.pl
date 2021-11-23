@@ -27,6 +27,6 @@ sibling(X, Y) :- parent(P, X), parent(P, Y), not(X=Y).
 % Define the cousin predicate
 cousin(X, Y) :- parent(A, X), parent(B, Y), sibling(A, B), not(A=B).
 
-% Define the ancestor predicate - fix this.  Currently an infinite loop.
+% Define the ancestor predicate
 ancestor(X, Z) :- parent(X, Z).
-ancestor(X, Z) :- ancestor(X, Y), parent(Y, Z).
+ancestor(X, Z) :- parent(Y, Z), ancestor(X, Y).
